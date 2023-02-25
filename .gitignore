@@ -5,3 +5,6 @@ build
 *.pyc
 local-scripts/
 *.numbers
+/.venv/
+/.project
+/.pydevproject

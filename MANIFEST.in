@@ -1,1 +1,1 @@
-include src/sariFieldDefinitionsGenerator/templates/*.handlebars
+include src/SemanticFieldDefinitionGenerator/templates/*.handlebars

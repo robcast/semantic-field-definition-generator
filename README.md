@@ -1,18 +1,20 @@
-# SARI Field Definitions Generator
+# Semantic Field Definition Generator
 
-A generator for Metaphacts/ResearchSpace field definitions
+A generator for Metaphacts/ResearchSpace semantic field definitions.
 
-## Installations
+## Installation
 
 install using pip
 
 ```sh
-pip install sari-field-definitions-generator
+pip install semantic-field-definition-generator
 ```
 
 ## Usage
 
-Define field definitions as a Python dict or in an external yaml file:
+### Create field definitions
+
+Define field definitions as a Python dict or in an external YAML file:
 
 ```yaml
 prefix: http://rs.swissartresearch.net/instances/fields/
@@ -37,7 +39,17 @@ fields:
     - ...
 ```
 
-Then, load and compile it using the generator
+Then, load and compile it using the the `write` action of the command line tool `semantic-field-util`
+
+```
+semantic-field-util -f RS -y ./fieldDefinitions.yml write -t ../ldp/assets/fieldDefinitions.trig
+```
+
+This will read the YAML file `fieldDefinitions.yml` and create ResearchSpace-flavor field definitions in the TriG file `../ldp/assets/fieldDefinitions.trig`. 
+
+For more details on use of the command line tool run `semantic-field-util -h`.
+
+You can also use the generator library in your Python program
 
 ```python
 from sariFieldDefinitionsGenerator import generator
@@ -54,8 +66,31 @@ with open(outputFile, 'w') as f:
 ```
 
 Available templates are:
-- `generator.METAPHACTS` for Metaphacts Open Source Platform
-- `generator.RESEARCHSPACE` for ResearchSpace
-- `generator.UNIVERSAL` for both platforms
-- `generator.JSON` for a JSON representation
-- `generator.INLINE` for a Backend Template version
+- `generator.METAPHACTS` for Metaphacts Open Source Platform (command line flavor `MP`)
+- `generator.RESEARCHSPACE` for ResearchSpace (command line flavor `RS`)
+- `generator.UNIVERSAL` for both platforms (command line flavor `UNI`)
+- `generator.JSON` for a JSON representation (command line flavor `JSON`)
+- `generator.INLINE` for a Backend Template version (command line flavor `INLINE`)
+
+### Read field definitions
+
+You can read semantic field definitions in RDF from a SPARQL endpoint or TriG files and create a YAML file in the format shown above using the `read` action of the command line tool `semantic-field-util`
+
+```
+semantic-field-util -f RS read -u http://localhost:8280/sparql -y ./fieldDefinitions.yml
+```
+
+This will read ResearchSpace-flavor field definitions from the SPARQL endpoint `http://localhost:8080/sparql` and create the YAML file `./fieldDefinitions.yml`.
+
+You can also use the parser library in your Python program
+
+```python
+from SemanticFieldDefinitionGenerator import parser
+
+sparql_uri = 'http://localhost:8080/sparql'
+outputFile = './fieldDefinitions.yml'
+
+store = parser.open_sparql_store(sparql_uri, repository='assets', auth_user='admin', auth_pass='admin')
+fields = parser.read_fields(store, parser.RESEARCHSPACE)
+parser.write_fields_yaml(fields, outputfile)
+```
