@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
     name="semantic-field-definition-generator", # Replace with your own username
-    version="1.0.0",
+    version="1.0.1rc1",
     author="Florian Kräutli, Robert Casties",
     author_email="florian.kraeutli@uzh.ch, casties@mpiwg-berlin.mpg.de",
     description="A generator for Field Definitions for ResearchSpace and Metaphacts",
@@ -13,9 +13,9 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/robcast/semantic-field-definition-generator.git",
-    packages=setuptools.find_packages(where="src"),
+    packages=setuptools.find_namespace_packages(where="src"),
     package_dir={"": "src"},
-    package_data={"": ["SemanticFieldDefinitionGenerator/templates/*.handlebars"]},
+    include_package_data=True,
     scripts=["bin/semantic-field-util"],
     classifiers=[
         "Programming Language :: Python :: 3",
