@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "semantic-field-definition-generator"
+version = "1.0.1rc4"
+authors = [
+  { name="Florian Kräutli", email="florian.kraeutli@uzh.ch" },
+  { name="Robert Casties", email="casties@mpiwg-berlin.mpg.de" },
+]
+description = "A generator for Field Definitions for ResearchSpace and Metaphacts"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "pybars3","PyYAML", "rdflib",
+]
+
+[project.scripts]
+semantic-field-util = "SemanticFieldDefinitionGenerator.semantic_field_util:main"
+
+[project.urls]
+"Homepage" = "https://github.com/robcast/semantic-field-definition-generator"
+
+[tool.setuptools.packages.find]
+namespaces = true
+where = ["src"]
+
+[tool.setuptools.package-data]
+"SemanticFieldDefinitionGenerator.templates" = ["*.handlebars"]
