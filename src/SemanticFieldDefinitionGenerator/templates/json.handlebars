@@ -19,13 +19,13 @@
             "maxOccurs" : "{{ maxOccurs }}",
         {{/if}}
         {{#if datatype}}
-            "xsdDatatype" : "{{ datatype }}",
+            "xsdDatatype" : "{{{ datatype }}}",
         {{/if}}
         {{#if domain}}
-            "domain" : "{{ domain }}",
+            "domain" : "{{{ domain }}}",
         {{/if}}
         {{#if range}}
-            "range" : "{{ range }}",
+            "range" : "{{{ range }}}",
         {{/if}}
         {{#if treePatterns}}
             "treePatterns": {

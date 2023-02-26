@@ -35,13 +35,13 @@
             rsfield:maxOccurs "{{ maxOccurs }}" ; 
         {{/if}}
         {{#if datatype}}
-            rsfield:xsdDatatype {{ datatype }} ; 
+            rsfield:xsdDatatype {{{ datatype }}} ; 
         {{/if}}
         {{#if domain}}
-            rsfield:domain {{ domain }} ; 
+            rsfield:domain {{{ domain }}} ; 
         {{/if}}
         {{#if range}}
-            rsfield:range {{ range }} ; 
+            rsfield:range {{{ range }}} ; 
         {{/if}}
         {{#each queries }}
             {{#if autosuggestion}}

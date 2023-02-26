@@ -1,4 +1,4 @@
-from rdflib import Dataset
+from rdflib import Dataset, URIRef
 from rdflib.namespace import Namespace
 from rdflib.plugins.stores.sparqlstore import SPARQLStore
 from pathlib import Path
@@ -101,6 +101,11 @@ def read_fields(store, flavor):
         #break
     return fields
 
+def uristr(node):
+    if isinstance(node, URIRef):
+        return f"<{node}>"
+    return str(node)
+
 def read_field(store, field_uri, graph_uri, prefixes):
     """read the semantic field with URI field_uri in named graph graph_uri from store.
     returns dict of field attributes.
@@ -171,11 +176,11 @@ def read_field(store, field_uri, graph_uri, prefixes):
         if f.description:
             field['description'] = str(f.description)
         if f.domain:
-            field['domain'] = str(f.domain)
+            field['domain'] = uristr(f.domain)
         if f.range:
-            field['range'] = str(f.range)
+            field['range'] = uristr(f.range)
         if f.datatype:
-            field['datatype'] = str(f.datatype)
+            field['datatype'] = uristr(f.datatype)
         if f.minOccurs:
             field['minOccurs'] = str(f.minOccurs)
         if f.maxOccurs:

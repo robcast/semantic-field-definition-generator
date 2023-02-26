@@ -48,16 +48,16 @@
             mpfield:maxOccurs "{{ maxOccurs }}" ;
         {{/if}}
         {{#if datatype}}
-            rsfield:xsdDatatype {{ datatype }} ; 
-            mpfield:xsdDatatype {{ datatype }} ;
+            rsfield:xsdDatatype {{{ datatype }}} ; 
+            mpfield:xsdDatatype {{{ datatype }}} ;
         {{/if}}
         {{#if domain}}
-            rsfield:domain {{ domain }} ; 
-            mpfield:domain {{ domain }} ;
+            rsfield:domain {{{ domain }}} ; 
+            mpfield:domain {{{ domain }}} ;
         {{/if}}
         {{#if range}}
-            rsfield:range {{ range }} ; 
-            mpfield:range {{ range }} ;
+            rsfield:range {{{ range }}} ; 
+            mpfield:range {{{ range }}} ;
         {{/if}}
         {{#each queries }}
             {{#if autosuggestion}}
