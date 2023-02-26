@@ -151,7 +151,7 @@ def read_field(store, field_uri, graph_uri, prefixes):
             } OPTIONAL {
                 ?field fielddef:autosuggestionPattern / sp:text ?autosuggestionPattern .
             } OPTIONAL {
-                ?field fielddef:valueSetPattern / sp:text ?valuesPattern .
+                ?field fielddef:valueSetPattern / sp:text ?valueSetPattern .
             }
         }
     }'''
@@ -181,19 +181,19 @@ def read_field(store, field_uri, graph_uri, prefixes):
         if f.maxOccurs:
             field['maxOccurs'] = str(f.maxOccurs)
 
-        queries = {}
+        queries = []
         if f.selectPattern:
-            queries['selectPattern'] = str(f.selectPattern)
+            queries.append({'select': str(f.selectPattern)})
         if f.insertPattern:
-            queries['insertPattern'] = str(f.insertPattern)
+            queries.append({'insert': str(f.insertPattern)})
         if f.deletePattern:
-            queries['deletePattern'] = str(f.deletePattern)
+            queries.append({'delete': str(f.deletePattern)})
         if f.askPattern:
-            queries['askPattern'] = str(f.selectaskPatternPattern)
+            queries.append({'ask': str(f.askPattern)})
         if f.autosuggestionPattern:
-            queries['autosuggestionPattern'] = str(f.autosuggestionPattern)
-        if 'valueSetPattern' in f:
-            queries['valueSetPattern'] = str(f.valueSetPattern)
+            queries.append({'autosuggestion': str(f.autosuggestionPattern)})
+        if f.valueSetPattern:
+            queries.append({'valueSet': str(f.valueSetPattern)})
             
         if queries:
             field['queries'] = queries
