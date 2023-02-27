@@ -1,5 +1,5 @@
 from rdflib import Dataset, URIRef
-from rdflib.namespace import Namespace
+from rdflib.namespace import Namespace, NamespaceManager
 from rdflib.plugins.stores.sparqlstore import SPARQLStore
 from pathlib import Path
 import yaml
@@ -20,13 +20,28 @@ ldpNs = Namespace('http://www.w3.org/ns/ldp#')
 xsdNs = Namespace('http://www.w3.org/2001/XMLSchema#')
 provNs = Namespace('http://www.w3.org/ns/prov#')
 spNs = Namespace('http://spinrdf.org/sp#')
+crmNs = Namespace('http://www.cidoc-crm.org/cidoc-crm/')
 rsFieldDefNs = Namespace('http://www.researchspace.org/resource/system/fields/')
 rsFieldConNs = Namespace('http://www.researchspace.org/resource/system/')
 mpFieldDefNs = Namespace('http://www.metaphacts.com/ontology/fields#')
 mpFieldConNs = Namespace('http://www.metaphacts.com/ontologies/platform#')
 # used prefixes, add chosen flavor of field*NS later
-nsPrefixes = {'rdfs': rdfsNs, 'ldp': ldpNs, 'sp': spNs}
+nsPrefixes = {'rdfs': rdfsNs, 'ldp': ldpNs, 'sp': spNs, 'crm': crmNs}
 
+# separate NamespaceManager for normalizations
+# rdflib BUG: queries may break when you use the store's manager :-(
+nsManager = NamespaceManager(Dataset())
+for pref, ns in nsPrefixes.items():
+    nsManager.bind(pref, ns)
+
+
+def uristr(node):
+    """return string form of node, normalizing URIs.""" 
+    if isinstance(node, URIRef):
+        # normalize to N3 form including namespaces
+        return node.n3(nsManager)
+        
+    return str(node)
 
 def open_sparql_store(endpoint, repository='assets', auth_user='admin', auth_pass='admin'):
     """open connection to SPARQL store.
@@ -89,6 +104,7 @@ def read_fields(store, flavor):
             ?field a fielddef:Field .
         }
     }'''
+    logging.debug(f"fields query='{query}'")
     res = store.query(query, initNs=prefixes)
     logging.info(f"found {len(res)} fields (flavor={flavor})")
     for r in res:
@@ -97,14 +113,8 @@ def read_fields(store, flavor):
         if field is not None:
             fields.append(field)
 
-        # debug
-        #break
+        #break # debug
     return fields
-
-def uristr(node):
-    if isinstance(node, URIRef):
-        return f"<{node}>"
-    return str(node)
 
 def read_field(store, field_uri, graph_uri, prefixes):
     """read the semantic field with URI field_uri in named graph graph_uri from store.
@@ -129,9 +139,9 @@ def read_field(store, field_uri, graph_uri, prefixes):
     - valueSetPattern: SPARQL SELECT query string for populating set choices such as in dropdown
     - treePatterns: SPARQL configuration to select terms from an hierarchical thesaurus.
     """
-    query = '''select *
-    where {
-        graph ?graph {
+    query = '''SELECT *
+    WHERE {
+        GRAPH ?graph {
             ?field rdfs:label ?label .
             OPTIONAL {
                 ?field rdfs:comment ?description .
@@ -160,6 +170,7 @@ def read_field(store, field_uri, graph_uri, prefixes):
             }
         }
     }'''
+    logging.debug(f"field query='{query}' bindings=('field': {field_uri}, 'graph': {graph_uri}) prefixes={prefixes}")
     res = store.query(query, initNs=prefixes, initBindings={'field': field_uri, 'graph': graph_uri})
     if len(res) < 1:
         logging.error(f"Field definition not found for URI={field_uri}")
@@ -167,7 +178,7 @@ def read_field(store, field_uri, graph_uri, prefixes):
     
     elif len(res) > 1:
         logging.warning(f"Duplicate field definition for URI={field_uri}")
-        
+     
     for f in res:
         field = {
             'id': str(field_uri),
@@ -185,7 +196,7 @@ def read_field(store, field_uri, graph_uri, prefixes):
             field['minOccurs'] = str(f.minOccurs)
         if f.maxOccurs:
             field['maxOccurs'] = str(f.maxOccurs)
-
+        
         queries = []
         if f.selectPattern:
             queries.append({'select': str(f.selectPattern)})
@@ -199,11 +210,11 @@ def read_field(store, field_uri, graph_uri, prefixes):
             queries.append({'autosuggestion': str(f.autosuggestionPattern)})
         if f.valueSetPattern:
             queries.append({'valueSet': str(f.valueSetPattern)})
-            
+        
         if queries:
             field['queries'] = queries
             
-        # break because there should be only one result but rdflib requires for loop
+        #break because there should be only one result but rdflib requires a for loop
         return field
     
     return None

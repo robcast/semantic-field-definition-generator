@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "semantic-field-definition-generator"
-version = "1.0.1rc4"
+version = "1.0.1rc6"
 authors = [
-  { name="Florian Kräutli", email="florian.kraeutli@uzh.ch" },
   { name="Robert Casties", email="casties@mpiwg-berlin.mpg.de" },
+  { name="Florian Kräutli", email="florian.kraeutli@uzh.ch" },
 ]
 description = "A generator for Field Definitions for ResearchSpace and Metaphacts"
 readme = "README.md"
