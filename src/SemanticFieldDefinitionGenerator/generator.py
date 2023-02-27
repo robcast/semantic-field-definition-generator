@@ -3,6 +3,8 @@ import yaml
 from pathlib import Path
 from pybars import Compiler
 
+__version__ = '1.1'
+
 UNIVERSAL = 0
 RESEARCHSPACE = 1
 METAPHACTS = 2
@@ -18,7 +20,7 @@ def loadSourceFromFile(file):
         raise Exception("Could not read " + file)
     
 
-def generate(source, output=UNIVERSAL):
+def generate(source, output=UNIVERSAL, splitFields=False):
     if output == METAPHACTS:
         templateFile = Path(__file__).parent / './templates/metaphacts.handlebars'
     elif output == RESEARCHSPACE:
@@ -50,8 +52,22 @@ def generate(source, output=UNIVERSAL):
     compiler = Compiler()
     template = compiler.compile(templateSource)
     try:
-        output = template(processedSource)
-        return output
+        if splitFields:
+            outputs = []
+            prefix = processedSource.get('prefix', '')
+            for field in processedSource['fields']:
+                # create new source for each field
+                fieldId = field['id']
+                fieldSource = {'prefix': prefix, 'fields': [field]}
+                fieldOutput = template(fieldSource)
+                # add id,output pair to list
+                outputs.append((prefix + fieldId, fieldOutput))
+                
+            return outputs
+
+        else:
+            output = template(processedSource)
+            return output
     except:
         raise Exception("Could not generate definitions")
 

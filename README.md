@@ -20,7 +20,7 @@ For more details on the use of the command line tool run `semantic-field-util -h
 usage: semantic-field-util [-h] [--version] [-f {RS,MP,UNI,JSON,INLINE}] -y YAML_FILE [-u SPARQL_URI]
                            [--sparql-repository SPARQL_REPOSITORY] [--sparql-auth-user SPARQL_USER]
                            [--sparql-auth-password SPARQL_PASS] [-t TRIG_FILE]
-                           [--field-id-prefix FIELD_PREFIX] [-l {INFO,DEBUG,ERROR}]
+                           [--field-id-prefix FIELD_PREFIX] [--split-fields] [-l {INFO,DEBUG,ERROR}]
                            {read,write}
 
 Utility to convert ResarchSpace/Metaphacts semantic field definitions.
@@ -46,10 +46,11 @@ options:
                         Optional SPARQL auth username, default=admin
   --sparql-auth-password SPARQL_PASS
                         Optional SPARQL auth password, default=admin
-  -t TRIG_FILE, --trig-file TRIG_FILE
+  -t TRIG_FILE, --trig TRIG_FILE
                         RDF TriG file to read (can be directory containing *.trig files) or write
   --field-id-prefix FIELD_PREFIX
                         Optional URL prefix for field ids
+  --split-fields        Optional split TriG output into one file per field (file name = field id)
   -l {INFO,DEBUG,ERROR}, --log {INFO,DEBUG,ERROR}
                         Log level.
 ```

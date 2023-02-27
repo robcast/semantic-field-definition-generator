@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 import logging
 
-__version__ = '1.0'
+__version__ = '1.1'
 
 # flavors
 RESEARCHSPACE = 1

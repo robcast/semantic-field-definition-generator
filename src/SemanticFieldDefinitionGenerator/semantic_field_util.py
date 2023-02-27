@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 from SemanticFieldDefinitionGenerator import generator, parser
+from pathlib import Path
+import urllib
 import argparse
 import logging
 import sys
 
-__version__ = '1.0'
+__version__ = '1.1'
 
 def main():
     ## 
@@ -29,10 +31,12 @@ def main():
                       help='Optional SPARQL auth username, default=admin')
     argp.add_argument('--sparql-auth-password', dest='sparql_pass', default='admin',
                       help='Optional SPARQL auth password, default=admin')
-    argp.add_argument('-t', '--trig-file', dest='trig_file',
+    argp.add_argument('-t', '--trig', dest='trig_file',
                       help='RDF TriG file to read (can be directory containing *.trig files) or write')
     argp.add_argument('--field-id-prefix', dest='field_prefix',
                       help='Optional URL prefix for field ids')
+    argp.add_argument('--split-fields', dest='split_fields', action='store_true',
+                      help='Optional split TriG output into one file per field (file name = field id)')
     argp.add_argument('-l', '--log', dest='loglevel', choices=['INFO', 'DEBUG', 'ERROR'], default='INFO', 
                       help='Log level.')
     args = argp.parse_args()
@@ -59,11 +63,26 @@ def main():
             
         logging.info(f"reading field definitions from YAML file {args.yaml_file}")
         model = generator.loadSourceFromFile(args.yaml_file)
-        output = generator.generate(model, flavor)
-        with open(args.trig_file, 'w') as f:
-            logging.info(f"writing field definitions to RDF trig file {args.trig_file} in flavor {args.flavor}")
-            f.write(output)
-    
+        if args.split_fields:
+            # generate split field list of ids and outputs
+            outputs = generator.generate(model, flavor, splitFields=True)
+            p = Path(args.trig_file)
+            if not p.is_dir():
+                sys.exit(f"ERROR: TRIG_FILE {p} must be directory for option split_fields!")
+                
+            logging.info(f"writing field definitions to RDF trig files in directory {args.trig_file} in flavor {args.flavor}")
+            for field_id, output in outputs:
+                filename = urllib.parse.quote_plus(field_id) + '.trig'
+                with open(p / filename, 'w') as f:
+                    logging.debug(f"writing trg file {filename}")
+                    f.write(output)
+                
+        else:
+            output = generator.generate(model, flavor, splitFields=False)
+            with open(args.trig_file, 'w') as f:
+                logging.info(f"writing field definitions to RDF trig file {args.trig_file} in flavor {args.flavor}")
+                f.write(output)
+
     ##
     ## read action
     ##        
