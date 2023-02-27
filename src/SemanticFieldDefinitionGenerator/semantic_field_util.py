@@ -32,7 +32,7 @@ def main():
     argp.add_argument('--sparql-auth-password', dest='sparql_pass', default='admin',
                       help='Optional SPARQL auth password, default=admin')
     argp.add_argument('-t', '--trig', dest='trig_file',
-                      help='RDF TriG file to read (can be directory containing *.trig files) or write')
+                      help='RDF TriG file (can be directory containing *.trig files) to read or write')
     argp.add_argument('--field-id-prefix', dest='field_prefix',
                       help='Optional URL prefix for field ids')
     argp.add_argument('--split-fields', dest='split_fields', action='store_true',

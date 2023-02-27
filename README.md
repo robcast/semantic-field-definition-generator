@@ -47,7 +47,7 @@ options:
   --sparql-auth-password SPARQL_PASS
                         Optional SPARQL auth password, default=admin
   -t TRIG_FILE, --trig TRIG_FILE
-                        RDF TriG file to read (can be directory containing *.trig files) or write
+                        RDF TriG file (can be directory containing *.trig files) to read or write
   --field-id-prefix FIELD_PREFIX
                         Optional URL prefix for field ids
   --split-fields        Optional split TriG output into one file per field (file name = field id)
