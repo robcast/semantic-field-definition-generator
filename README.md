@@ -12,6 +12,48 @@ pip install semantic-field-definition-generator
 
 ## Usage
 
+### Command line tool
+
+For more details on the use of the command line tool run `semantic-field-util -h`:
+
+```
+usage: semantic-field-util [-h] [--version] [-f {RS,MP,UNI,JSON,INLINE}] -y YAML_FILE [-u SPARQL_URI]
+                           [--sparql-repository SPARQL_REPOSITORY] [--sparql-auth-user SPARQL_USER]
+                           [--sparql-auth-password SPARQL_PASS] [-t TRIG_FILE]
+                           [--field-id-prefix FIELD_PREFIX] [-l {INFO,DEBUG,ERROR}]
+                           {read,write}
+
+Utility to convert ResarchSpace/Metaphacts semantic field definitions.
+
+positional arguments:
+  {read,write}          Action: read=read semantic field definitions in RDF (SPARQL store or file) and
+                        write YAML file, write=read YAML file and write semantic field definitions to
+                        RDF file
+
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  -f {RS,MP,UNI,JSON,INLINE}, --flavor {RS,MP,UNI,JSON,INLINE}
+                        Flavor of RDF field definitions: RS=ResearchSpace, MP=Metaphacts,
+                        UNI=universal, JSON=JSON, INLINE=inline, default=RS
+  -y YAML_FILE, --yaml YAML_FILE
+                        YAML file with field definitions to read or write
+  -u SPARQL_URI, --sparql-uri SPARQL_URI
+                        SPARQL endpoint URI, e.g. http://localhost:8081/sparql
+  --sparql-repository SPARQL_REPOSITORY
+                        Optional SPARQL repository parameter, default=assets
+  --sparql-auth-user SPARQL_USER
+                        Optional SPARQL auth username, default=admin
+  --sparql-auth-password SPARQL_PASS
+                        Optional SPARQL auth password, default=admin
+  -t TRIG_FILE, --trig-file TRIG_FILE
+                        RDF TriG file to read (can be directory containing *.trig files) or write
+  --field-id-prefix FIELD_PREFIX
+                        Optional URL prefix for field ids
+  -l {INFO,DEBUG,ERROR}, --log {INFO,DEBUG,ERROR}
+                        Log level.
+```
+
 ### Create field definitions
 
 Define field definitions as a Python dict or in an external YAML file:
@@ -45,9 +87,7 @@ Then, load and compile it using the the `write` action of the command line tool 
 semantic-field-util -f RS -y ./fieldDefinitions.yml write -t ../ldp/assets/fieldDefinitions.trig
 ```
 
-This will read the YAML file `fieldDefinitions.yml` and create ResearchSpace-flavor field definitions in the TriG file `../ldp/assets/fieldDefinitions.trig`. 
-
-For more details on use of the command line tool run `semantic-field-util -h`.
+This will read the YAML file `fieldDefinitions.yml` and create ResearchSpace-flavor (`-f RS`) field definitions in the TriG file `../ldp/assets/fieldDefinitions.trig`.
 
 You can also use the generator library in your Python program
 

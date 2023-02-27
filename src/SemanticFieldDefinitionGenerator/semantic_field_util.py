@@ -31,6 +31,8 @@ def main():
                       help='Optional SPARQL auth password, default=admin')
     argp.add_argument('-t', '--trig-file', dest='trig_file',
                       help='RDF TriG file to read (can be directory containing *.trig files) or write')
+    argp.add_argument('--field-id-prefix', dest='field_prefix',
+                      help='Optional URL prefix for field ids')
     argp.add_argument('-l', '--log', dest='loglevel', choices=['INFO', 'DEBUG', 'ERROR'], default='INFO', 
                       help='Log level.')
     args = argp.parse_args()
@@ -81,5 +83,5 @@ def main():
         else:
             sys.exit(f"ERROR: action 'read' requires SPARQL_URI or TRIG_FILE!")
     
-        fields = parser.read_fields(store, flavor)
-        parser.write_fields_yaml(fields, args.yaml_file)
+        fields = parser.read_fields(store, flavor, field_id_prefix=args.field_prefix)
+        parser.write_fields_yaml(fields, args.yaml_file, field_id_prefix=args.field_prefix)

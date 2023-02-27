@@ -84,7 +84,7 @@ def read_trig_store(pathname):
 
     return store
 
-def read_fields(store, flavor):
+def read_fields(store, flavor, field_id_prefix=None):
     """read all fields of given flavor from store.
     returns list of fields as dicts.
     """
@@ -109,14 +109,18 @@ def read_fields(store, flavor):
     logging.info(f"found {len(res)} fields (flavor={flavor})")
     for r in res:
         logging.debug(f"field uri={r.field} in graph={r.graph}")
-        field = read_field(store, r.field, r.graph, prefixes)
+        field_id = str(r.field)
+        if field_id_prefix and field_id.startswith(field_id_prefix):
+            field_id = field_id[len(field_id_prefix):]
+            
+        field = read_field(store, r.field, r.graph, field_id, prefixes)
         if field is not None:
             fields.append(field)
 
         #break # debug
     return fields
 
-def read_field(store, field_uri, graph_uri, prefixes):
+def read_field(store, field_uri, graph_uri, field_id, prefixes):
     """read the semantic field with URI field_uri in named graph graph_uri from store.
     returns dict of field attributes.
     
@@ -181,7 +185,7 @@ def read_field(store, field_uri, graph_uri, prefixes):
      
     for f in res:
         field = {
-            'id': str(field_uri),
+            'id': field_id,
             'label': str(f.label)
         }
         if f.description:
@@ -219,8 +223,12 @@ def read_field(store, field_uri, graph_uri, prefixes):
     
     return None
 
-def write_fields_yaml(fields, filename):
+def write_fields_yaml(fields, filename, field_id_prefix=None):
     """write all fields to YAML file filename."""
     logging.info(f"writing {len(fields)} fields to YAML file {filename}")
     with open(filename, 'w') as f:
-        yaml.dump({'fields': fields}, stream=f)
+        data = {'fields': fields}
+        if field_id_prefix:
+            data['prefix'] = field_id_prefix
+        
+        yaml.dump(data, stream=f)
