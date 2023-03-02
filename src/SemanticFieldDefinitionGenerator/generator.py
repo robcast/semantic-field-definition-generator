@@ -1,9 +1,10 @@
 import copy
 import yaml
+import logging
 from pathlib import Path
 from pybars import Compiler
 
-__version__ = '1.1'
+__version__ = '1.2'
 
 UNIVERSAL = 0
 RESEARCHSPACE = 1
@@ -18,7 +19,16 @@ def loadSourceFromFile(file):
             return source
     except:
         raise Exception("Could not read " + file)
-    
+
+def _checkSource(source):
+    # make sure some attributes are not lists
+    for field in source['fields']:
+        for att in ['domain', 'range', 'defaultValue']:
+            if att in field and isinstance(field[att], list):
+                logging.warning(f"Multiple values in Field attribute '{att}' not supported! Using only first value.")
+                field[att] = field[att][0]
+
+    return source
 
 def generate(source, output=UNIVERSAL, splitFields=False):
     if output == METAPHACTS:
@@ -35,7 +45,7 @@ def generate(source, output=UNIVERSAL, splitFields=False):
     with templateFile.open() as f:
         templateSource = f.read()
 
-    processedSource = copy.deepcopy(source)
+    processedSource = _checkSource(copy.deepcopy(source))
     if output == JSON or output == INLINE:
         for i in range(len(source['fields'])):
             if 'queries' in source['fields'][i]:

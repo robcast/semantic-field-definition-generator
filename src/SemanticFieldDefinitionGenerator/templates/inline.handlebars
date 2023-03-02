@@ -19,6 +19,12 @@
         {{#if maxOccurs}}
             "maxOccurs" : "{{ maxOccurs }}",
         {{/if}}
+        {{#if order}}
+            "order" : "{{ order }}",
+        {{/if}}
+        {{#if defaultValue}}
+            "defaultValue" : "{{ defaultValue }}", 
+        {{/if}}
         {{#if datatype}}
             "xsdDatatype" : "{{{ datatype }}}",
         {{/if}}

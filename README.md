@@ -135,3 +135,8 @@ store = parser.open_sparql_store(sparql_uri, repository='assets', auth_user='adm
 fields = parser.read_fields(store, parser.RESEARCHSPACE)
 parser.write_fields_yaml(fields, outputfile)
 ```
+
+## Limitations
+
+- The parser currently doesn't support "Tree Patterns".
+- The generator currently doesn't support multiple values for "Domains", "Ranges" and "Default Values".

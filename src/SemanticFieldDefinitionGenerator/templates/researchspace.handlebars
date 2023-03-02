@@ -34,6 +34,12 @@
         {{#if maxOccurs}}
             rsfield:maxOccurs "{{ maxOccurs }}" ; 
         {{/if}}
+        {{#if order}}
+            rsfield:order "{{ order }}" ; 
+        {{/if}}
+        {{#if defaultValue}}
+            rsfield:defaultValue "{{ defaultValue }}" ; 
+        {{/if}}
         {{#if datatype}}
             rsfield:xsdDatatype {{{ datatype }}} ; 
         {{/if}}

@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 import logging
 
-__version__ = '1.1'
+__version__ = '1.2'
 
 # flavors
 RESEARCHSPACE = 1
@@ -120,6 +120,35 @@ def read_fields(store, flavor, field_id_prefix=None):
         #break # debug
     return fields
 
+def _set_once(items, key, value):
+    """set items[key] to value if it doesn't exist, warn if value is different."""
+    if key in items:
+        if items[key] != value:
+            logging.warning(f"Ignoring different value to set! key={key} value={value}")
+        
+    else:
+        items[key] = value
+        
+    return items
+
+def _set_append(items, key, value):
+    """set items[key] to value if it doesn't exist, append to list if value is different."""
+    if key in items:
+        oldval = items[key]
+        if oldval != value:
+            # existing value is different
+            if isinstance(oldval, list):
+                # append to existing list
+                oldval.append(value)
+            else:
+                # create new list
+                items[key] = [oldval, value]
+        
+    else:
+        items[key] = value
+        
+    return items
+
 def read_field(store, field_uri, graph_uri, field_id, prefixes):
     """read the semantic field with URI field_uri in named graph graph_uri from store.
     returns dict of field attributes.
@@ -160,6 +189,10 @@ def read_field(store, field_uri, graph_uri, field_id, prefixes):
             } OPTIONAL {
                 ?field fielddef:maxOccurs ?maxOccurs . 
             } OPTIONAL {
+                ?field fielddef:order ?order .
+            } OPTIONAL {
+                ?field fielddef:defaultValue ?defaultValue .
+            } OPTIONAL {
                 ?field fielddef:selectPattern / sp:text ?selectPattern .
             } OPTIONAL {
                 ?field fielddef:insertPattern / sp:text ?insertPattern .
@@ -180,48 +213,47 @@ def read_field(store, field_uri, graph_uri, field_id, prefixes):
         logging.error(f"Field definition not found for URI={field_uri}")
         return None
     
-    elif len(res) > 1:
-        logging.warning(f"Duplicate field definition for URI={field_uri}")
-     
+    field = {
+        'id': field_id,
+    }
+    # loop through possibly multiple attribute values
     for f in res:
-        field = {
-            'id': field_id,
-            'label': str(f.label)
-        }
+        _set_once(field, 'label', str(f.label))
         if f.description:
-            field['description'] = str(f.description)
+            _set_once(field, 'description', str(f.description))
         if f.domain:
-            field['domain'] = uristr(f.domain)
+            _set_append(field, 'domain', uristr(f.domain))
         if f.range:
-            field['range'] = uristr(f.range)
+            _set_append(field, 'range', uristr(f.range))
         if f.datatype:
-            field['datatype'] = uristr(f.datatype)
+            _set_once(field, 'datatype', uristr(f.datatype))
         if f.minOccurs:
-            field['minOccurs'] = str(f.minOccurs)
+            _set_once(field, 'minOccurs', str(f.minOccurs))
         if f.maxOccurs:
-            field['maxOccurs'] = str(f.maxOccurs)
+            _set_once(field, 'maxOccurs', str(f.maxOccurs))
+        if f.order:
+            _set_once(field, 'order', str(f.order))
+        if f.defaultValue:
+            _set_append(field, 'defaultValue', str(f.defaultValue))
         
-        queries = []
+        queries = {}
         if f.selectPattern:
-            queries.append({'select': str(f.selectPattern)})
+            _set_once(queries, 'select', str(f.selectPattern))
         if f.insertPattern:
-            queries.append({'insert': str(f.insertPattern)})
+            _set_once(queries, 'insert', str(f.insertPattern))
         if f.deletePattern:
-            queries.append({'delete': str(f.deletePattern)})
+            _set_once(queries, 'delete', str(f.deletePattern))
         if f.askPattern:
-            queries.append({'ask': str(f.askPattern)})
+            _set_once(queries, 'ask', str(f.askPattern))
         if f.autosuggestionPattern:
-            queries.append({'autosuggestion': str(f.autosuggestionPattern)})
+            _set_once(queries, 'autosuggestion', str(f.autosuggestionPattern))
         if f.valueSetPattern:
-            queries.append({'valueSet': str(f.valueSetPattern)})
+            _set_once(queries, 'valueSet', str(f.valueSetPattern))
         
         if queries:
-            field['queries'] = queries
-            
-        #break because there should be only one result but rdflib requires a for loop
-        return field
+            field['queries'] = [{k: v} for k, v in queries.items()]
     
-    return None
+    return field
 
 def write_fields_yaml(fields, filename, field_id_prefix=None):
     """write all fields to YAML file filename."""

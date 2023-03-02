@@ -34,6 +34,12 @@
         {{#if maxOccurs}}
             mpfield:maxOccurs "{{ maxOccurs }}" ;
         {{/if}}
+        {{#if order}}
+            mpfield:order "{{ order }}" ; 
+        {{/if}}
+        {{#if defaultValue}}
+            mpfield:defaultValue "{{ defaultValue }}" ; 
+        {{/if}}
         {{#if datatype}}
             mpfield:xsdDatatype {{{ datatype }}} ;
         {{/if}}
