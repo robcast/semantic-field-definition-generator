@@ -95,7 +95,7 @@ This will read the YAML file `fieldDefinitions.yml` and create ResearchSpace-fla
 You can also use the generator library in your Python program
 
 ```python
-from sariFieldDefinitionsGenerator import generator
+from SemanticFieldDefinitionGenerator import generator
 
 inputFile = './fieldDefinitions.yml'
 outputFile = '../ldp/assets/fieldDefinitions.trig'
