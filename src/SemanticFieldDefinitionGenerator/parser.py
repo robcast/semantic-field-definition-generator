@@ -35,13 +35,43 @@ for pref, ns in nsPrefixes.items():
     nsManager.bind(pref, ns)
 
 
-def uristr(node):
+def _uristr(node):
     """return string form of node, normalizing URIs.""" 
     if isinstance(node, URIRef):
         # normalize to N3 form including namespaces
         return node.n3(nsManager)
         
     return str(node)
+
+def _set_once(items, key, value):
+    """set items[key] to value if it doesn't exist, warn if value is different."""
+    if key in items:
+        if items[key] != value:
+            logging.warning(f"Ignoring different value to set! key={key} value={value}")
+        
+    else:
+        items[key] = value
+        
+    return items
+
+def _set_append(items, key, value):
+    """set items[key] to value if it doesn't exist, append to list if value is different."""
+    if key in items:
+        oldval = items[key]
+        if oldval != value:
+            # existing value is different
+            if isinstance(oldval, list):
+                # append to existing list
+                oldval.append(value)
+            else:
+                # create new list
+                items[key] = [oldval, value]
+        
+    else:
+        items[key] = value
+        
+    return items
+
 
 def open_sparql_store(endpoint, repository='assets', auth_user='admin', auth_pass='admin'):
     """open connection to SPARQL store.
@@ -68,7 +98,7 @@ def open_sparql_store(endpoint, repository='assets', auth_user='admin', auth_pas
     return store
 
 def read_trig_store(pathname):
-    """create store from trig file(s).
+    """create store by loading trig file(s) from pathname.
     """
     logging.info(f"creating trig file store from {pathname}")
     store = Dataset()
@@ -103,9 +133,11 @@ def read_fields(store, flavor, field_id_prefix=None):
             fieldcon:fieldDefinitionContainer ldp:contains ?field .
             ?field a fielddef:Field .
         }
-    }'''
+    }
+    ORDER BY ?field'''
     logging.debug(f"fields query='{query}'")
     res = store.query(query, initNs=prefixes)
+    
     logging.info(f"found {len(res)} fields (flavor={flavor})")
     for r in res:
         logging.debug(f"field uri={r.field} in graph={r.graph}")
@@ -119,35 +151,6 @@ def read_fields(store, flavor, field_id_prefix=None):
 
         #break # debug
     return fields
-
-def _set_once(items, key, value):
-    """set items[key] to value if it doesn't exist, warn if value is different."""
-    if key in items:
-        if items[key] != value:
-            logging.warning(f"Ignoring different value to set! key={key} value={value}")
-        
-    else:
-        items[key] = value
-        
-    return items
-
-def _set_append(items, key, value):
-    """set items[key] to value if it doesn't exist, append to list if value is different."""
-    if key in items:
-        oldval = items[key]
-        if oldval != value:
-            # existing value is different
-            if isinstance(oldval, list):
-                # append to existing list
-                oldval.append(value)
-            else:
-                # create new list
-                items[key] = [oldval, value]
-        
-    else:
-        items[key] = value
-        
-    return items
 
 def read_field(store, field_uri, graph_uri, field_id, prefixes):
     """read the semantic field with URI field_uri in named graph graph_uri from store.
@@ -222,11 +225,11 @@ def read_field(store, field_uri, graph_uri, field_id, prefixes):
         if f.description:
             _set_once(field, 'description', str(f.description))
         if f.domain:
-            _set_append(field, 'domain', uristr(f.domain))
+            _set_append(field, 'domain', _uristr(f.domain))
         if f.range:
-            _set_append(field, 'range', uristr(f.range))
+            _set_append(field, 'range', _uristr(f.range))
         if f.datatype:
-            _set_once(field, 'datatype', uristr(f.datatype))
+            _set_once(field, 'datatype', _uristr(f.datatype))
         if f.minOccurs:
             _set_once(field, 'minOccurs', str(f.minOccurs))
         if f.maxOccurs:
