@@ -1,6 +1,10 @@
 # Semantic Field Definition Generator
 
-A generator for Metaphacts/ResearchSpace semantic field definitions. 
+A generator for [Metaphacts](https://metaphacts.com/) / [ResearchSpace](https://researchspace.org/) semantic field definitions. 
+
+For background information see:
+- ResearchSpace: https://documentation.researchspace.org/resource/Help:SemanticForm
+- Metaphacts: https://help.metaphacts.com/resource/Help:SemanticForm
 
 Based on https://github.com/swiss-art-research-net/sari-field-definitions-generator
 
