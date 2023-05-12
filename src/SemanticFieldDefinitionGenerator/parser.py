@@ -4,8 +4,9 @@ from rdflib.plugins.stores.sparqlstore import SPARQLStore
 from pathlib import Path
 import yaml
 import logging
+from urllib.parse import urlencode, quote_plus
 
-__version__ = '1.2'
+__version__ = '1.3'
 
 # flavors
 RESEARCHSPACE = 1
@@ -258,12 +259,24 @@ def read_field(store, field_uri, graph_uri, field_id, prefixes):
     
     return field
 
-def write_fields_yaml(fields, filename, field_id_prefix=None):
+def write_fields_yaml(fields, filename, field_id_prefix=None, splitFields=False):
     """write all fields to YAML file filename."""
-    logging.info(f"writing {len(fields)} fields to YAML file {filename}")
-    with open(filename, 'w') as f:
-        data = {'fields': fields}
-        if field_id_prefix:
-            data['prefix'] = field_id_prefix
-        
-        yaml.dump(data, stream=f)
+    if splitFields:
+        logging.info(f"writing {len(fields)} fields to YAML directory {filename}")
+        for field in fields:
+            fn = quote_plus(field['id']) + '.yml'
+            with open(Path(filename, fn), 'w') as f:
+                data = {'fields': [field]}
+                if field_id_prefix:
+                    data['prefix'] = field_id_prefix
+                
+                yaml.dump(data, stream=f)
+            
+    else:
+        logging.info(f"writing {len(fields)} fields to YAML file {filename}")
+        with open(filename, 'w') as f:
+            data = {'fields': fields}
+            if field_id_prefix:
+                data['prefix'] = field_id_prefix
+            
+            yaml.dump(data, stream=f)

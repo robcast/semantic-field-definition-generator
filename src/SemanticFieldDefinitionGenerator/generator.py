@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 from pybars import Compiler
 
-__version__ = '1.2'
+__version__ = '1.3'
 
 UNIVERSAL = 0
 RESEARCHSPACE = 1
@@ -14,11 +14,35 @@ INLINE = 4
 
 def loadSourceFromFile(file):
     try:
-        with open (file, 'r') as f:
-            source = yaml.safe_load(f.read())
+        p = Path(file)
+        if p.is_dir():
+            fields = []
+            prefix = None
+            for fn in p.glob('*.yml'):
+                logging.debug(f"reading yaml file {fn}")
+                with open (fn, 'r') as f:
+                    new_source = yaml.safe_load(f.read())
+                    fields.extend(new_source['fields'])
+                    new_prefix = new_source['prefix']
+                    if new_prefix:
+                        if new_prefix != prefix:
+                            if prefix is not None:
+                                raise Exception(f"YAML files have different prefixes: {prefix} vs {new_prefix}")
+                            else:
+                                prefix = new_prefix
+            
+            source = {'fields': fields}
+            if prefix:
+                source['prefix'] = prefix
             return source
-    except:
-        raise Exception("Could not read " + file)
+    
+        else:
+            with open (file, 'r') as f:
+                source = yaml.safe_load(f.read())
+                return source
+
+    except Exception as e:
+        raise Exception(f"Could not read {file}: {e}")
 
 def _checkSource(source):
     # make sure some attributes are not lists

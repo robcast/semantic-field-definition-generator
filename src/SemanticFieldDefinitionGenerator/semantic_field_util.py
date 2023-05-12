@@ -6,7 +6,7 @@ import argparse
 import logging
 import sys
 
-__version__ = '1.2'
+__version__ = '1.3'
 
 def main():
     ## 
@@ -16,13 +16,13 @@ def main():
     argp.add_argument('--version', action='version', version='%(prog)s ' + __version__)
     argp.add_argument('action', choices=['read', 'write'],
                       help='Action: read=read semantic field definitions in RDF (SPARQL store or file) and write YAML file, '
-                      + 'write=read YAML file and write semantic field definitions to RDF file')
+                      + 'write=read YAML file and write semantic field definitions to RDF TriG file(s)')
     argp.add_argument('-f', '--flavor', dest='flavor', choices=['RS', 'MP', 'UNI', 'JSON', 'INLINE'],
                       default='RS',
                       help='Flavor of RDF field definitions: RS=ResearchSpace, MP=Metaphacts, UNI=universal, '
                       + 'JSON=JSON, INLINE=inline, default=RS')
     argp.add_argument('-y', '--yaml', required=True, dest='yaml_file',
-                      help='YAML file with field definitions to read or write')
+                      help='YAML file (can be directory containing *.yml files) with field definitions to read or write')
     argp.add_argument('-u', '--sparql-uri', dest='sparql_uri',
                       help='SPARQL endpoint URI, e.g. http://localhost:8081/sparql')
     argp.add_argument('--sparql-repository', dest='sparql_repository', default='assets',
@@ -36,7 +36,7 @@ def main():
     argp.add_argument('--field-id-prefix', dest='field_prefix',
                       help='Optional URL prefix for field ids')
     argp.add_argument('--split-fields', dest='split_fields', action='store_true',
-                      help='Optional split TriG output into one file per field (file name = field id)')
+                      help='Optional split TriG/YAML output into one file per field (file name = field id)')
     argp.add_argument('-l', '--log', dest='loglevel', choices=['INFO', 'DEBUG', 'ERROR'], default='INFO', 
                       help='Log level.')
     args = argp.parse_args()
@@ -103,4 +103,4 @@ def main():
             sys.exit(f"ERROR: action 'read' requires SPARQL_URI or TRIG_FILE!")
     
         fields = parser.read_fields(store, flavor, field_id_prefix=args.field_prefix)
-        parser.write_fields_yaml(fields, args.yaml_file, field_id_prefix=args.field_prefix)
+        parser.write_fields_yaml(fields, args.yaml_file, field_id_prefix=args.field_prefix, splitFields=args.split_fields)
