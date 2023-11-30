@@ -54,7 +54,7 @@ def _checkSource(source):
 
     return source
 
-def generate(source, output=UNIVERSAL, splitFields=False):
+def generate(source, output=UNIVERSAL, splitFields=False, add_ns_prefix=None):
     if output == METAPHACTS:
         templateFile = Path(__file__).parent / './templates/metaphacts.handlebars'
     elif output == RESEARCHSPACE:
@@ -70,6 +70,7 @@ def generate(source, output=UNIVERSAL, splitFields=False):
         templateSource = f.read()
 
     processedSource = _checkSource(copy.deepcopy(source))
+        
     if output == JSON or output == INLINE:
         for i in range(len(source['fields'])):
             if 'queries' in source['fields'][i]:
@@ -82,7 +83,6 @@ def generate(source, output=UNIVERSAL, splitFields=False):
                     escapedValue = value.replace('"','\\"')
                     processedSource['fields'][i]['treePatterns'][key] = escapedValue
 
-
     compiler = Compiler()
     template = compiler.compile(templateSource)
     try:
@@ -92,7 +92,7 @@ def generate(source, output=UNIVERSAL, splitFields=False):
             for field in processedSource['fields']:
                 # create new source for each field
                 fieldId = field['id']
-                fieldSource = {'prefix': prefix, 'fields': [field]}
+                fieldSource = {'prefix': prefix, 'fields': [field], 'extra_ns': add_ns_prefix}
                 fieldOutput = template(fieldSource)
                 # add id,output pair to list
                 outputs.append((prefix + fieldId, fieldOutput))
@@ -100,6 +100,7 @@ def generate(source, output=UNIVERSAL, splitFields=False):
             return outputs
 
         else:
+            processedSource['extra_ns'] = add_ns_prefix
             output = template(processedSource)
             return output
     except:

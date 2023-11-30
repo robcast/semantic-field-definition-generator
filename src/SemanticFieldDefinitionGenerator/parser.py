@@ -115,12 +115,17 @@ def read_trig_store(pathname):
 
     return store
 
-def read_fields(store, flavor, field_id_prefix=None):
+def read_fields(store, flavor, field_id_prefix=None, add_ns_prefix=None):
     """read all fields of given flavor from store.
     returns list of fields as dicts.
     """
     fields = []
-    prefixes = nsPrefixes
+    if add_ns_prefix:
+        prefixes = nsPrefixes.copy()
+        prefixes.update(add_ns_prefix)
+    else:
+        prefixes = nsPrefixes
+    
     if flavor == METAPHACTS:
         prefixes['fielddef'] = mpFieldDefNs
         prefixes['fieldcon'] = mpFieldConNs

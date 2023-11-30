@@ -37,6 +37,8 @@ def main():
                       help='Optional URL prefix for field ids')
     argp.add_argument('--split-fields', dest='split_fields', action='store_true',
                       help='Optional split TriG/YAML output into one file per field (file name = field id)')
+    argp.add_argument('--add-ns-prefix', dest='add_ns_prefix',
+                      help='Optional additional namespace prefix e.g. skos=http://www.w3.org/2004/02/skos/core# (multiple separated by comma)')
     argp.add_argument('-l', '--log', dest='loglevel', choices=['INFO', 'DEBUG', 'ERROR'], default='INFO', 
                       help='Log level.')
     args = argp.parse_args()
@@ -61,11 +63,16 @@ def main():
         if not args.trig_file:
             sys.exit(f"ERROR: action 'write' requires TRIG_FILE!")
             
+        if args.add_ns_prefix:
+            add_ns_prefix = { key: val for key, val in [prefs.split('=') for prefs in args.add_ns_prefix.split(',')]}
+        else:
+            add_ns_prefix = None
+    
         logging.info(f"reading field definitions from YAML file {args.yaml_file}")
         model = generator.loadSourceFromFile(args.yaml_file)
         if args.split_fields:
             # generate split field list of ids and outputs
-            outputs = generator.generate(model, flavor, splitFields=True)
+            outputs = generator.generate(model, flavor, splitFields=True, add_ns_prefix=add_ns_prefix)
             p = Path(args.trig_file)
             if not p.is_dir():
                 sys.exit(f"ERROR: TRIG_FILE {p} must be directory for option split_fields!")
@@ -74,11 +81,11 @@ def main():
             for field_id, output in outputs:
                 filename = urllib.parse.quote_plus(field_id) + '.trig'
                 with open(p / filename, 'w') as f:
-                    logging.debug(f"writing trg file {filename}")
+                    logging.debug(f"writing trig file {filename}")
                     f.write(output)
                 
         else:
-            output = generator.generate(model, flavor, splitFields=False)
+            output = generator.generate(model, flavor, splitFields=False, add_ns_prefix=add_ns_prefix)
             with open(args.trig_file, 'w') as f:
                 logging.info(f"writing field definitions to RDF trig file {args.trig_file} in flavor {args.flavor}")
                 f.write(output)
@@ -93,6 +100,11 @@ def main():
             flavor = parser.METAPHACTS
         else:
             sys.exit(f"ERROR: action 'read' does not support flavor {args.flavor}!")
+            
+        if args.add_ns_prefix:
+            add_ns_prefix = { key: val for key, val in [prefs.split('=') for prefs in args.add_ns_prefix.split(',')]}
+        else:
+            add_ns_prefix = None
     
         if args.sparql_uri:
             store = parser.open_sparql_store(args.sparql_uri, repository=args.sparql_repository, 
@@ -102,5 +114,5 @@ def main():
         else:
             sys.exit(f"ERROR: action 'read' requires SPARQL_URI or TRIG_FILE!")
     
-        fields = parser.read_fields(store, flavor, field_id_prefix=args.field_prefix)
+        fields = parser.read_fields(store, flavor, field_id_prefix=args.field_prefix, add_ns_prefix=add_ns_prefix)
         parser.write_fields_yaml(fields, args.yaml_file, field_id_prefix=args.field_prefix, splitFields=args.split_fields)

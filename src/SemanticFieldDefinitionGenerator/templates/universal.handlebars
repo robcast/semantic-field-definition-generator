@@ -8,10 +8,8 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rsuser: <http://www.researchspace.org/resource/user/> .
 @prefix mpuser: <http://www.metaphacts.com/resource/user/> .
-{{#each fields}}
-    {{#if extraNs }}
-@prefix {{{ extraNs }}} .
-    {{/if}}
+{{#each extra_ns }}
+@prefix {{ @key }}: <{{{ this }}}> .
 {{/each}}
 
 <http://www.researchspace.org/resource/system/fieldDefinitionContainer/context> {
