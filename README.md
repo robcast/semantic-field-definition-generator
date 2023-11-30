@@ -23,26 +23,29 @@ pip install semantic-field-definition-generator
 For more details on the use of the command line tool run `semantic-field-util -h`:
 
 ```
-usage: semantic-field-util [-h] [--version] [-f {RS,MP,UNI,JSON,INLINE}] -y YAML_FILE [-u SPARQL_URI]
-                           [--sparql-repository SPARQL_REPOSITORY] [--sparql-auth-user SPARQL_USER]
-                           [--sparql-auth-password SPARQL_PASS] [-t TRIG_FILE] [--field-id-prefix FIELD_PREFIX]
-                           [--split-fields] [-l {INFO,DEBUG,ERROR}]
+usage: semantic-field-util [-h] [--version] [-f {RS,MP,UNI,JSON,INLINE}] -y YAML_FILE
+                           [-u SPARQL_URI] [--sparql-repository SPARQL_REPOSITORY]
+                           [--sparql-auth-user SPARQL_USER] [--sparql-auth-password SPARQL_PASS]
+                           [-t TRIG_FILE] [--field-id-prefix FIELD_PREFIX] [--split-fields]
+                           [--add-ns-prefix ADD_NS_PREFIX] [-l {INFO,DEBUG,ERROR}]
                            {read,write}
 
 Utility to convert ResarchSpace/Metaphacts semantic field definitions.
 
 positional arguments:
-  {read,write}          Action: read=read semantic field definitions in RDF (SPARQL store or file) and write YAML file,
-                        write=read YAML file and write semantic field definitions to RDF TriG file(s)
+  {read,write}          Action: read=read semantic field definitions in RDF (SPARQL store or file)
+                        and write YAML file, write=read YAML file and write semantic field
+                        definitions to RDF TriG file(s)
 
 options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   -f {RS,MP,UNI,JSON,INLINE}, --flavor {RS,MP,UNI,JSON,INLINE}
-                        Flavor of RDF field definitions: RS=ResearchSpace, MP=Metaphacts, UNI=universal, JSON=JSON,
-                        INLINE=inline, default=RS
+                        Flavor of RDF field definitions: RS=ResearchSpace, MP=Metaphacts,
+                        UNI=universal, JSON=JSON, INLINE=inline, default=RS
   -y YAML_FILE, --yaml YAML_FILE
-                        YAML file (can be directory containing *.yml files) with field definitions to read or write
+                        YAML file (can be directory containing *.yml files) with field definitions
+                        to read or write
   -u SPARQL_URI, --sparql-uri SPARQL_URI
                         SPARQL endpoint URI, e.g. http://localhost:8081/sparql
   --sparql-repository SPARQL_REPOSITORY
@@ -55,7 +58,11 @@ options:
                         RDF TriG file (can be directory containing *.trig files) to read or write
   --field-id-prefix FIELD_PREFIX
                         Optional URL prefix for field ids
-  --split-fields        Optional split TriG/YAML output into one file per field (file name = field id)
+  --split-fields        Optional split TriG/YAML output into one file per field (file name = field
+                        id)
+  --add-ns-prefix ADD_NS_PREFIX
+                        Optional additional namespace prefix e.g.
+                        skos=http://www.w3.org/2004/02/skos/core# (multiple separated by comma)
   -l {INFO,DEBUG,ERROR}, --log {INFO,DEBUG,ERROR}
                         Log level.
 ```
