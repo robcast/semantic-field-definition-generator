@@ -144,7 +144,6 @@ def read_fields(store, flavor, field_id_prefix=None, add_ns_prefix=None):
     logging.debug(f"fields query='{query}'")
     res = store.query(query, initNs=prefixes)
     
-    logging.info(f"found {len(res)} fields (flavor={flavor})")
     for r in res:
         logging.debug(f"field uri={r.field} in graph={r.graph}")
         field_id = str(r.field)
@@ -267,7 +266,6 @@ def read_field(store, field_uri, graph_uri, field_id, prefixes):
 def write_fields_yaml(fields, filename, field_id_prefix=None, splitFields=False):
     """write all fields to YAML file filename."""
     if splitFields:
-        logging.info(f"writing {len(fields)} fields to YAML directory {filename}")
         for field in fields:
             fn = quote_plus(field['id']) + '.yml'
             with open(Path(filename, fn), 'w') as f:
@@ -278,7 +276,6 @@ def write_fields_yaml(fields, filename, field_id_prefix=None, splitFields=False)
                 yaml.dump(data, stream=f)
             
     else:
-        logging.info(f"writing {len(fields)} fields to YAML file {filename}")
         with open(filename, 'w') as f:
             data = {'fields': fields}
             if field_id_prefix:

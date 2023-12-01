@@ -70,6 +70,7 @@ def main():
     
         logging.info(f"reading field definitions from YAML file {args.yaml_file}")
         model = generator.loadSourceFromFile(args.yaml_file)
+        logging.info(f"  read {len(model['fields'])} field definitions")
         if args.split_fields:
             # generate split field list of ids and outputs
             outputs = generator.generate(model, flavor, splitFields=True, add_ns_prefix=add_ns_prefix)
@@ -78,12 +79,16 @@ def main():
                 sys.exit(f"ERROR: TRIG_FILE {p} must be directory for option split_fields!")
                 
             logging.info(f"writing field definitions to RDF trig files in directory {args.trig_file} in flavor {args.flavor}")
+            cnt = 0
             for field_id, output in outputs:
                 filename = urllib.parse.quote_plus(field_id) + '.trig'
                 with open(p / filename, 'w') as f:
                     logging.debug(f"writing trig file {filename}")
                     f.write(output)
+                    cnt += 1
                 
+            logging.info(f"  wrote {cnt} trig files")
+
         else:
             output = generator.generate(model, flavor, splitFields=False, add_ns_prefix=add_ns_prefix)
             with open(args.trig_file, 'w') as f:
@@ -102,6 +107,7 @@ def main():
             sys.exit(f"ERROR: action 'read' does not support flavor {args.flavor}!")
             
         if args.add_ns_prefix:
+            # create dict from add_ns_prefix string
             add_ns_prefix = { key: val for key, val in [prefs.split('=') for prefs in args.add_ns_prefix.split(',')]}
         else:
             add_ns_prefix = None
@@ -115,4 +121,9 @@ def main():
             sys.exit(f"ERROR: action 'read' requires SPARQL_URI or TRIG_FILE!")
     
         fields = parser.read_fields(store, flavor, field_id_prefix=args.field_prefix, add_ns_prefix=add_ns_prefix)
+        logging.info(f"  found {len(fields)} fields (flavor={args.flavor})")
         parser.write_fields_yaml(fields, args.yaml_file, field_id_prefix=args.field_prefix, splitFields=args.split_fields)
+        if args.split_fields:
+            logging.info(f"  wrote {len(fields)} fields to YAML directory {args.yaml_file}")
+        else:
+            logging.info(f"  wrote {len(fields)} fields to YAML file {args.yaml_file}")
