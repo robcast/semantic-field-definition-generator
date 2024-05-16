@@ -6,7 +6,7 @@ import argparse
 import logging
 import sys
 
-__version__ = '1.3'
+__version__ = '1.5'
 
 def main():
     ## 

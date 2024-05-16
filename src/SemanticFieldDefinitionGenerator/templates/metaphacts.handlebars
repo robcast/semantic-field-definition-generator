@@ -40,18 +40,18 @@
         {{#if order}}
             mpfield:order "{{ order }}" ; 
         {{/if}}
-        {{#if defaultValue}}
-            mpfield:defaultValue "{{ defaultValue }}" ; 
-        {{/if}}
+        {{#each defaultValue}}
+            mpfield:defaultValue "{{ this }}" ; 
+        {{/each}}
         {{#if datatype}}
             mpfield:xsdDatatype {{{ datatype }}} ;
         {{/if}}
-        {{#if domain}}
-            mpfield:domain {{{ domain }}} ;
-        {{/if}}
-        {{#if range}}
-            mpfield:range {{{ range }}} ;
-        {{/if}}
+        {{#each domain}}
+            mpfield:domain {{{ this }}} ;
+        {{/each}}
+        {{#each range}}
+            mpfield:range {{{ this }}} ;
+        {{/each}}
         {{#each queries }}
             {{#if autosuggestion}}
                 mpfield:autosuggestionPattern <{{ ../../prefix }}{{../id}}/query/autosuggestion> ;

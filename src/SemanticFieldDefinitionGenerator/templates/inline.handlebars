@@ -23,16 +23,16 @@
             "order" : "{{ order }}",
         {{/if}}
         {{#if defaultValue}}
-            "defaultValue" : "{{ defaultValue }}", 
+            "defaultValue" : {{{ defaultValue }}}, 
         {{/if}}
         {{#if datatype}}
             "xsdDatatype" : "{{{ datatype }}}",
         {{/if}}
         {{#if domain}}
-            "domain" : "{{{ domain }}}",
+            "domain" : {{{ domain }}},
         {{/if}}
         {{#if range}}
-            "range" : "{{ range }}}",
+            "range" : {{{ range }}},
         {{/if}}
         {{#if treePatterns}}
             "treePatterns": {

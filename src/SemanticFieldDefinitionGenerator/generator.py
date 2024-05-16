@@ -45,12 +45,12 @@ def loadSourceFromFile(file):
         raise Exception(f"Could not read {file}: {e}")
 
 def _checkSource(source):
-    # make sure some attributes are not lists
+    # make sure some attributes are lists
     for field in source['fields']:
         for att in ['domain', 'range', 'defaultValue']:
-            if att in field and isinstance(field[att], list):
-                logging.warning(f"Multiple values in Field attribute '{att}' not supported! Using only first value.")
-                field[att] = field[att][0]
+            if att in field and not isinstance(field[att], list):
+                logging.debug(f"Wrapping single value in Field attribute '{att}' in list.")
+                field[att] = [field[att]]
 
     return source
 

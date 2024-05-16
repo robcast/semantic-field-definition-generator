@@ -54,22 +54,22 @@
             rsfield:order "{{ order }}" ; 
             mpfield:order "{{ order }}" ; 
         {{/if}}
-        {{#if defaultValue}}
-            rsfield:defaultValue "{{ defaultValue }}" ; 
-            mpfield:defaultValue "{{ defaultValue }}" ; 
-        {{/if}}
+        {{#each defaultValue}}
+            rsfield:defaultValue "{{ this }}" ; 
+            mpfield:defaultValue "{{ this }}" ; 
+        {{/each}}
         {{#if datatype}}
             rsfield:xsdDatatype {{{ datatype }}} ; 
             mpfield:xsdDatatype {{{ datatype }}} ;
         {{/if}}
-        {{#if domain}}
-            rsfield:domain {{{ domain }}} ; 
-            mpfield:domain {{{ domain }}} ;
-        {{/if}}
-        {{#if range}}
-            rsfield:range {{{ range }}} ; 
-            mpfield:range {{{ range }}} ;
-        {{/if}}
+        {{#each domain}}
+            rsfield:domain {{{ this }}} ; 
+            mpfield:domain {{{ this }}} ;
+        {{/each}}
+        {{#each range}}
+            rsfield:range {{{ this }}} ; 
+            mpfield:range {{{ this }}} ;
+        {{/each}}
         {{#each queries }}
             {{#if autosuggestion}}
                 rsfield:autosuggestionPattern <{{ ../../prefix }}{{../id}}/query/autosuggestion> ; mpfield:autosuggestionPattern <{{ ../../prefix }}{{../id}}/query/autosuggestion> ;
